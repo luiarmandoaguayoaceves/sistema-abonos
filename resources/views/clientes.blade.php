@@ -56,7 +56,7 @@
             <tbody>
                 @foreach($clientes as $cliente)
                 <tr>
-                    <td class="font-bold text-blue-800">{{ $cliente->numero_cliente }}</td>
+                    <td class="font-bold text-blue-800">{{ $cliente->cve_cliente }}</td>
                     <td>{{ $cliente->nombre }}</td>
                     <td>{{ $cliente->marca }}</td>
                     <td>{{ $cliente->frecuencia_pago }}</td>
