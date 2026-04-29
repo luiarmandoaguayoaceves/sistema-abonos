@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Pedido extends Model
 {
-    protected $fillable = ['cliente', 'detalles', 'subtotal', 'iva', 'total', 'folio_factura', 'pdf_factura', 'pagado'];
+    protected $fillable = ['cliente', 'n_pedido', 'detalles', 'subtotal', 'iva', 'total', 'folio_factura', 'pdf_factura', 'pagado'];
 
     protected $casts = [
         'detalles' => 'array',

@@ -15,10 +15,15 @@
             </div>
         @endif
 
+        <div class="mb-4">
+            <input type="text" id="search" placeholder="Buscar por pedido..." class="border px-4 py-2 rounded w-full">
+        </div>
+
         <div class="bg-white shadow-md rounded-lg overflow-x-auto border">
-            <table class="min-w-full divide-y divide-gray-200">
+            <table class="min-w-full divide-y divide-gray-200" id="pedidos-table">
                 <thead class="bg-gray-50">
                     <tr>
+                        <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">N. Pedido</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Fecha</th>
                         <th class="px-6 py-3 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Cliente
                         </th>
@@ -31,7 +36,10 @@
                 </thead>
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse($pedidos as $pedido)
-                        <tr class="{{ $pedido->pagado ? 'bg-green-100 hover:bg-green-200' : 'bg-yellow-100 hover:bg-yellow-200' }} transition border-b border-white">
+                        <tr class="{{ $pedido->pagado ? 'bg-green-100 hover:bg-green-200' : 'bg-yellow-100 hover:bg-yellow-200' }} transition border-b border-white pedido-row">
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-medium">
+                                {{ $pedido->n_pedido ?? $pedido->id }}
+                            </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-medium">
                                 {{ $pedido->created_at->format('d/m/Y H:i') }}
                             </td>
@@ -61,8 +69,8 @@
                             </td>
                         </tr>
 
-                        <tr id="detalle-{{ $pedido->id }}" class="hidden bg-gray-50">
-                            <td colspan="5" class="px-10 py-6">
+                        <tr id="detalle-{{ $pedido->id }}" class="hidden bg-gray-50 detalle-row">
+                            <td colspan="6" class="px-10 py-6">
                                 <div class="border rounded-lg bg-white p-4 shadow-inner">
                                     <p class="text-xs font-bold uppercase text-blue-600 mb-3 flex items-center">
                                         <span class="mr-2">👟</span> Desglose de Productos
@@ -112,7 +120,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-6 py-10 text-center text-gray-500">
+                            <td colspan="6" class="px-6 py-10 text-center text-gray-500">
                                 No hay pedidos registrados todavía.
                             </td>
                         </tr>
@@ -127,5 +135,18 @@
             const fila = document.getElementById(`detalle-${id}`);
             fila.classList.toggle('hidden');
         }
+
+        document.getElementById('search').addEventListener('input', function() {
+            const query = this.value.toLowerCase();
+            const rows = document.querySelectorAll('.pedido-row');
+            const detalles = document.querySelectorAll('.detalle-row');
+
+            rows.forEach((row, index) => {
+                const pedido = row.cells[0].textContent.toLowerCase();
+                const visible = pedido.includes(query);
+                row.style.display = visible ? '' : 'none';
+                detalles[index].style.display = visible ? (detalles[index].classList.contains('hidden') ? 'none' : '') : 'none';
+            });
+        });
     </script>
 @endsection

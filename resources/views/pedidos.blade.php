@@ -10,7 +10,7 @@
                 <h3 class="text-lg font-semibold mb-4 text-gray-700 border-b pb-2">Agregar Producto</h3>
                 <form id="formProducto" class="space-y-4">
                     <div class="grid grid-cols-1 gap-4">
-                        <div>
+                        <div class="flex flex-col space-y-2">
                             <label class="block text-sm font-medium text-gray-700">Modelo</label>
                             <input type="text" id="modelo" placeholder="Ej. Bota-01" required
                                 class="w-full border-gray-300 rounded-md p-2 border">
@@ -48,14 +48,23 @@
                 <div class="bg-white p-6 rounded-lg border shadow-sm">
 
                     <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-100">
-                        <label class="block text-sm font-bold text-blue-800 uppercase mb-1">Nombre del Cliente / Razón
-                            Social</label>
-                        <select id="cliente_global" class="w-full text-lg font-semibold border-gray-300 rounded-md p-2 border focus:ring-2 focus:ring-blue-500">
-                            <option value="">Buscar y seleccionar cliente...</option>
-                            @foreach($clientes as $cliente)
-                                <option value="{{ $cliente->numero_cliente }} - {{ $cliente->nombre }}">{{ $cliente->numero_cliente }} - {{ $cliente->nombre }}</option>
-                            @endforeach
-                        </select>
+                        <div class="grid grid-cols-5 gap-4 items-end">
+                            <div class="col-span-4">
+                                <label class="block text-sm font-bold text-blue-800 uppercase mb-1">Nombre del Cliente / Razón Social</label>
+                                <select id="cliente_global" class="w-full text-lg font-semibold border-gray-300 rounded-md p-2 border focus:ring-2 focus:ring-blue-500">
+                                    <option value="">Buscar y seleccionar cliente...</option>
+                                    @foreach($clientes as $cliente)
+                                        <option value="{{ $cliente->numero_cliente }} - {{ $cliente->nombre }}">{{ $cliente->numero_cliente }} - {{ $cliente->nombre }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="col-span-1">
+                                <label class="block text-sm font-bold text-blue-800 uppercase mb-1">N. Pedido</label>
+                                <input type="text" id="pedido" placeholder="Opcional"
+                                    class="w-full text-lg font-semibold border-gray-300 rounded-md p-2 border focus:ring-2 focus:ring-blue-500"
+                                    oninput="actualizarInterfaz()">
+                            </div>
+                        </div>
                     </div>
 
                     <h3 class="text-lg font-semibold mb-4 text-gray-700">Resumen del Pedido</h3>
@@ -97,6 +106,7 @@
                     <input type="hidden" name="cliente" id="hiddenCliente">
                     <input type="hidden" name="datos_pedido" id="inputHiddenDatos">
                     <input type="hidden" name="iva_aplicado" id="hiddenIvaStatus">
+                    <input type="hidden" name="pedido" id="hiddenPedido">
 
                     <button type="submit"
                         class="w-full bg-green-600 text-white py-4 rounded-lg text-xl font-bold shadow-lg hover:bg-green-700 transition transform hover:scale-[1.01]">
@@ -118,7 +128,7 @@
 
             // Validación de campos de producto
             if (!modelo || !color || isNaN(pares) || isNaN(precio)) {
-                alert("Por favor, completa los datos del calzado.");
+                alert("Por favor, completa todos los datos del calzado.");
                 return;
             }
 
@@ -131,7 +141,7 @@
                 subtotalItem
             });
 
-            // Solo reseteamos el formulario del producto
+            // Reseteamos el formulario del producto sin tocar el número de pedido
             document.getElementById('formProducto').reset();
             actualizarInterfaz();
         }
@@ -145,6 +155,7 @@
             const tbody = document.getElementById('cuerpoTabla');
             const aplicarIva = document.getElementById('aplicarIvaGlobal').checked;
             const nombreCliente = document.getElementById('cliente_global').value;
+            const pedido = document.getElementById('pedido').value;
 
             tbody.innerHTML = "";
             let subtotalAcumulado = 0;
@@ -172,6 +183,7 @@
 
             // Asignar valores a los inputs ocultos para el envío al servidor
             document.getElementById('hiddenCliente').value = nombreCliente;
+            document.getElementById('hiddenPedido').value = pedido;
             document.getElementById('inputHiddenDatos').value = JSON.stringify(itemsPedido);
             document.getElementById('hiddenIvaStatus').value = aplicarIva ? 1 : 0;
         }
@@ -180,7 +192,9 @@
         document.getElementById('formFinal').onsubmit = function() {
             // REFUERZO: Capturar el nombre justo antes de enviar
             const clienteReal = document.getElementById('cliente_global').value;
+            const pedidoReal = document.getElementById('pedido').value;
             document.getElementById('hiddenCliente').value = clienteReal;
+            document.getElementById('hiddenPedido').value = pedidoReal;
 
             if (!clienteReal.trim()) {
                 alert("¡Error! Debes escribir el nombre del cliente antes de guardar.");
@@ -196,6 +210,7 @@
         function sincronizarCliente() {
             const nombre = document.getElementById('cliente_global').value;
             document.getElementById('hiddenCliente').value = nombre;
+            actualizarInterfaz();
         }
     </script>
 

@@ -16,20 +16,27 @@ class PedidoController extends Controller
 }
     public function store(Request $request)
     {
-        // El cliente ahora viene de su propio input
+        $request->validate([
+            'pedido' => 'nullable|string',
+            'cliente' => 'required|string',
+            'datos_pedido' => 'required|json',
+            'iva_aplicado' => 'required|boolean',
+        ]);
+
         $cliente = $request->input('cliente');
-        $items = json_decode($request->datos_pedido, true);
-        $aplicaIva = $request->input('iva_aplicado') == 1;
+        $items = json_decode($request->input('datos_pedido'), true);
+        $aplicaIva = $request->boolean('iva_aplicado');
 
         $subtotal = collect($items)->sum('subtotalItem');
         $iva = $aplicaIva ? ($subtotal * 0.16) : 0;
 
         Pedido::create([
-            'cliente'  => $cliente,
+            'n_pedido' => $request->input('pedido'),
+            'cliente' => $cliente,
             'detalles' => $items,
             'subtotal' => $subtotal,
-            'iva'      => $iva,
-            'total'    => $subtotal + $iva,
+            'iva' => $iva,
+            'total' => $subtotal + $iva,
         ]);
 
         return redirect()->route('seguimiento')->with('success', 'Pedido de ' . $cliente . ' guardado.');
