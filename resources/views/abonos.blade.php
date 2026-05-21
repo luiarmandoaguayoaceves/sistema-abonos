@@ -1,8 +1,5 @@
 @extends('layouts.app')
 
-@section('styles')
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-@endsection
 
 @section('content')
     <div class="max-w-7xl mx-auto">
@@ -13,11 +10,17 @@
                 <h3 class="text-lg font-bold mb-4">Registrar Nuevo Abono</h3>
                 <form action="{{ route('abonos.store') }}" method="POST" class="space-y-4">
                     @csrf
-                    <div>
-                        <label class="block text-sm font-medium">Seleccionar Pedido Pendiente</label>
-                        <select name="pedido_id" required class="w-full border rounded p-2">
-                            @foreach ($pedidosPendientes as $p)
-                                <option value="{{ $p->id }}">#{{ $p->n_pedido ?? $p->id}} - {{ $p->cliente }} (Falta: ${{ number_format($p->saldoPendiente(), 2) }})</option>
+                     <!-- El elemento Select HTML -->
+                    <div class="form-group">
+                        <label for="pedido_pendiente">Seleccionar Pedido Pendiente (Filtrar por Cliente):</label>
+                        <select class="form-control select2-pedidos" id="pedido_pendiente" name="pedido_id" style="width: 100%;">
+                            <option value=""></option> <!-- Empty option obligatoria para el placeholder -->
+                            
+                            <!-- Ejemplo de estructura iterando tus pedidos y clientes en Blade -->
+                            @foreach($pedidosPendientes as $pedido)
+                                <option value="{{ $pedido->id }}">
+                                    Pedido #{{ $pedido->n_pedido ?? $pedido->id}} - {{ $pedido->cliente }} ({{ $pedido->fecha }})
+                                </option>
                             @endforeach
                         </select>
                     </div>
@@ -149,6 +152,16 @@
 
     <script>
         $(document).ready(function() {
+            $('.select2-pedidos').select2({
+                placeholder: "Escribe el nombre del cliente o número de pedido...",
+                allowClear: true,
+                width: 'resolve', // Asegura que tome el ancho del contenedor responsivo
+                language: {
+                    noResults: function() {
+                        return "No se encontraron pedidos para este cliente";
+                    }
+                }
+            });
             $('.cliente-select').select2({
                 placeholder: "Selecciona un cliente",
                 allowClear: true

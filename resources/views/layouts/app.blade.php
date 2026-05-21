@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Calzado NuevaEra</title>
+    <!-- 1. En el <head> de tu plantilla (antes de tus estilos propios) -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.tailwindcss.com"></script>
 </head>
 
@@ -102,5 +104,11 @@
         });
     </script>
 </body>
+
+<!-- 2. Al final del <body> (en este orden exacto) -->
+<!-- Primero jQuery (si no lo has cargado ya) -->
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<!-- Después Select2 -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 </html>
