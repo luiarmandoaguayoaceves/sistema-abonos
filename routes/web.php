@@ -38,3 +38,5 @@ Route::delete('/facturas/{id}', [FacturaController::class, 'destroy'])->name('fa
 Route::get('/abonos', [AbonoController::class, 'index'])->name('abonos.index');
 Route::post('/abonos', [AbonoController::class, 'store'])->name('abonos.store');
 Route::patch('/abonos/{id}/pagar', [AbonoController::class, 'marcarPagado'])->name('abonos.pagado');
+
+Route::put('pedidos/update-fecha/{id}', [PedidoController::class, 'updateFecha'])->name('pedidos.updateFecha');

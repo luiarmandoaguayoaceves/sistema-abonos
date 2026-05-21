@@ -41,4 +41,19 @@ class PedidoController extends Controller
 
         return redirect()->route('seguimiento')->with('success', 'Pedido de ' . $cliente . ' guardado.');
     }
+
+    public function updateFecha(Request $request, $id)
+    {
+        $request->validate([
+            'fecha_entrega' => 'required|date',
+        ]);
+
+        $pedido = Pedido::findOrFail($id);
+        
+        // Actualizamos el created_at
+        $pedido->created_at = $request->fecha_entrega;
+        $pedido->save();
+
+        return redirect()->back()->with('success', 'Fecha actualizada correctamente.');
+    }
 }
