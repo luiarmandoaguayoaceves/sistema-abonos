@@ -18,7 +18,7 @@
                             
                             <!-- Ejemplo de estructura iterando tus pedidos y clientes en Blade -->
                             @foreach($pedidosPendientes as $p)
-                                <option value="{{ $pedido->id }}">
+                                <option value="{{ $p->id }}">
                                     <option value="{{ $p->id }}">#{{ $p->n_pedido ?? $p->id}} - {{ $p->cliente }} (Falta: ${{ number_format($p->saldoPendiente(), 2) }})</option>
                                 </option>
                             @endforeach
