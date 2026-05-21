@@ -66,7 +66,7 @@
                         <div class="pedido-card bg-white p-4 rounded-lg shadow border border-l-4 border-l-orange-400" data-cliente="{{ strtolower($p->cliente) }}">
                             <div class="flex justify-between items-start border-b pb-2 mb-2">
                                 <div>
-                                    <h4 class="font-bold text-lg">Pedido #{{ $p->id }} - {{ $p->cliente }}</h4>
+                                    <h4 class="font-bold text-lg">Pedido #{{ $p->n_pedido ?? $p->id}} - {{ $p->cliente }}</h4>
                                     <p class="text-xs text-gray-500 uppercase italic">Marca: {{ $p->cliente_relacion->marca ?? 'N/A' }}</p>
                                 </div>
                                 <div class="text-right">
