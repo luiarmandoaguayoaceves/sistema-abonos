@@ -14,10 +14,6 @@ Route::get('/home', function () {
     return view('welcome');
 })->name('home');
 
-Route::get('/facturas', function () {
-    return view('facturas');
-})->name('facturas');
-
 Route::get('/pedidos', function () {
     $clientes = \App\Models\Cliente::all();
     return view('pedidos', compact('clientes'));
