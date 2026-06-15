@@ -2,6 +2,7 @@ import './bootstrap';
 import './pedidos';
 import './seguimiento';
 import './facturas';
+import './abonos';
 
 document.addEventListener('DOMContentLoaded', () => {
     const btnMenu = document.getElementById('btn-menu');

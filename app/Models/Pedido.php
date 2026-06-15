@@ -41,6 +41,10 @@ class Pedido extends Model
 
     public function saldoPendiente(): float
     {
-        return round($this->total - $this->abonos()->sum('monto'), 2);
+        $totalAbonado = $this->relationLoaded('abonos')
+            ? $this->abonos->sum('monto')
+            : $this->abonos()->sum('monto');
+
+        return round((float) $this->total - (float) $totalAbonado, 2);
     }
 }
