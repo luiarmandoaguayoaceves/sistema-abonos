@@ -53,10 +53,11 @@
                                 <label class="block text-sm font-bold text-blue-800 uppercase mb-1">Nombre del Cliente / Razón Social</label>
                                 <select id="cliente_global" class="w-full text-lg font-semibold border-gray-300 rounded-md p-2 border focus:ring-2 focus:ring-blue-500">
                                     <option value="">Buscar y seleccionar cliente...</option>
-                                    @foreach($clientes as $cliente)
-                                        <option value="{{ $cliente->nombre }}">
-                                            {{ $cliente->cve_cliente ?? 'S/N' }} - {{ $cliente->nombre }}
-                                        </option>                                    @endforeach
+                                        @foreach($clientes as $cliente)
+                                            <option value="{{ $cliente->nombre }}">
+                                                {{ $cliente->cve_cliente ?? 'S/N' }} - {{ $cliente->nombre }}
+                                            </option>
+                                        @endforeach
                                 </select>
                             </div>
                             <div class="col-span-1">
