@@ -3,6 +3,7 @@ import './pedidos';
 import './seguimiento';
 import './facturas';
 import './abonos';
+import './pwa-install';
 
 document.addEventListener('DOMContentLoaded', () => {
     const btnMenu = document.getElementById('btn-menu');
