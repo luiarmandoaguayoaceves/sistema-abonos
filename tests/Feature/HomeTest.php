@@ -1,6 +1,7 @@
 <?php
 
-it('carga la página principal correctamente', function () {
-    $this->get('/')
-        ->assertOk();
+it('carga el dashboard principal correctamente', function () {
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertSee('Dashboard general');
 });
