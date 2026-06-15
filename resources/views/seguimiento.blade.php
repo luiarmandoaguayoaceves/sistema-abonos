@@ -35,9 +35,9 @@
                     @forelse($pedidos as $pedido)
                         <tr class="{{ $pedido->pagado ? 'bg-green-100 hover:bg-green-200' : 'bg-yellow-100 hover:bg-yellow-200' }} transition border-b border-white pedido-row">
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-medium">{{ $pedido->n_pedido ?? $pedido->id }}</td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-medium">{{ $pedido->created_at->format('d/m/Y H:i') }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 font-medium">{{ optional($pedido->fecha_entrega ?? $pedido->created_at)->format('d/m/Y H:i') }}</td>
                             <td class="px-6 py-4 whitespace-nowrap"><div class="text-sm font-semibold text-gray-900">{{ $pedido->cliente }}</div></td>
-                            <td class="px-6 py-4 whitespace-nowrap text-center"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-bold">{{ count($pedido->detalles) }} items</span></td>
+                            <td class="px-6 py-4 whitespace-nowrap text-center"><span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-xs font-bold">{{ $pedido->detallesPedido->count() ?: count($pedido->detalles ?? []) }} items</span></td>
                             <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-bold {{ $pedido->pagado ? 'text-green-800' : 'text-yellow-800' }}">
                                 ${{ number_format($pedido->total, 2) }}
                                 <div class="mt-1"><span class="text-[10px] {{ $pedido->pagado ? 'bg-green-300 text-green-900' : 'bg-yellow-300 text-yellow-900' }} px-2 py-1 rounded-full uppercase">{{ $pedido->pagado ? '✅ Pagado' : '⏳ Pendiente' }}</span></div>
@@ -54,7 +54,7 @@
                                     <form action="{{ route('pedidos.updateFecha', $pedido->id) }}" method="POST" class="mb-6 pb-4 border-b flex items-center gap-4">
                                         @csrf @method('PUT')
                                         <label class="text-xs font-bold uppercase text-gray-600">Cambiar fecha:</label>
-                                        <input type="datetime-local" name="fecha_entrega" value="{{ $pedido->created_at->format('Y-m-d\TH:i') }}" class="border rounded px-2 py-1 text-sm">
+                                        <input type="datetime-local" name="fecha_entrega" value="{{ optional($pedido->fecha_entrega ?? $pedido->created_at)->format('Y-m-d\TH:i') }}" class="border rounded px-2 py-1 text-sm">
                                         <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded text-xs hover:bg-blue-700">Actualizar</button>
                                     </form>
 
@@ -65,14 +65,31 @@
                                             <tr><th class="pb-2">Modelo / Color</th><th class="pb-2 text-center">Pares</th><th class="pb-2 text-right">Precio</th><th class="pb-2 text-right">Subtotal</th></tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($pedido->detalles as $item)
-                                            <tr>
-                                                <td class="py-2"><span class="font-semibold text-gray-800">{{ $item['modelo'] }}</span> <span class="text-gray-500 text-xs">({{ $item['color'] }})</span></td>
-                                                <td class="py-2 text-center text-gray-700">{{ $item['pares'] }}</td>
-                                                <td class="py-2 text-right text-gray-600">${{ number_format($item['precio'], 2) }}</td>
-                                                <td class="py-2 text-right font-medium text-gray-900">${{ number_format($item['subtotalItem'], 2) }}</td>
-                                            </tr>
-                                            @endforeach
+                                            @if ($pedido->detallesPedido->isNotEmpty())
+                                                @foreach ($pedido->detallesPedido as $detalle)
+                                                    <tr>
+                                                        <td class="py-2">
+                                                            <span class="font-semibold text-gray-800">{{ $detalle->modelo }}</span>
+                                                            <span class="text-gray-500 text-xs">({{ $detalle->color }})</span>
+                                                        </td>
+                                                        <td class="py-2 text-center text-gray-700">{{ $detalle->pares }}</td>
+                                                        <td class="py-2 text-right text-gray-600">${{ number_format($detalle->precio_unitario, 2) }}</td>
+                                                        <td class="py-2 text-right font-medium text-gray-900">${{ number_format($detalle->subtotal, 2) }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @else
+                                                @foreach (($pedido->detalles ?? []) as $item)
+                                                    <tr>
+                                                        <td class="py-2">
+                                                            <span class="font-semibold text-gray-800">{{ $item['modelo'] ?? 'Sin modelo' }}</span>
+                                                            <span class="text-gray-500 text-xs">({{ $item['color'] ?? 'Sin color' }})</span>
+                                                        </td>
+                                                        <td class="py-2 text-center text-gray-700">{{ $item['pares'] ?? 0 }}</td>
+                                                        <td class="py-2 text-right text-gray-600">${{ number_format($item['precio'] ?? 0, 2) }}</td>
+                                                        <td class="py-2 text-right font-medium text-gray-900">${{ number_format($item['subtotalItem'] ?? 0, 2) }}</td>
+                                                    </tr>
+                                                @endforeach
+                                            @endif
                                         </tbody>
                                     </table>
                                 </div>

@@ -54,8 +54,9 @@
                                 <select id="cliente_global" class="w-full text-lg font-semibold border-gray-300 rounded-md p-2 border focus:ring-2 focus:ring-blue-500">
                                     <option value="">Buscar y seleccionar cliente...</option>
                                     @foreach($clientes as $cliente)
-                                        <option value="{{ $cliente->nombre }}">{{ $cliente->numero_cliente }} - {{ $cliente->nombre }}</option>
-                                    @endforeach
+                                        <option value="{{ $cliente->nombre }}">
+                                            {{ $cliente->cve_cliente ?? 'S/N' }} - {{ $cliente->nombre }}
+                                        </option>                                    @endforeach
                                 </select>
                             </div>
                             <div class="col-span-1">
