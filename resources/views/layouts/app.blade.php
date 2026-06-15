@@ -68,15 +68,6 @@
                             Salir
                         </button>
                     </form>
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button
-                            type="submit"
-                            class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-blue-100 hover:bg-red-700 hover:text-white"
-                        >
-                            Salir
-                        </button>
-                    </form>
                 </div>
 
                 <div class="md:hidden flex items-center">
@@ -114,6 +105,15 @@
             <a href="{{ route('facturas') }}" class="block px-3 py-2 rounded-md text-base font-medium {{ request()->routeIs('facturas') ? 'bg-blue-700 text-white' : 'text-blue-100 hover:bg-blue-700' }}">
                 Facturación
             </a>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button
+                    type="submit"
+                    class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-blue-100 hover:bg-red-700 hover:text-white"
+                >
+                    Salir
+                </button>
+            </form>
         </div>
     </nav>
     <div
