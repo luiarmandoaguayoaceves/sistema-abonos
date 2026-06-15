@@ -1,5 +1,6 @@
 import './bootstrap';
 import './pedidos';
+import './seguimiento';
 
 document.addEventListener('DOMContentLoaded', () => {
     const btnMenu = document.getElementById('btn-menu');
