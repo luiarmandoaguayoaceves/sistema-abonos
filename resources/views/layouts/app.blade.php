@@ -12,7 +12,7 @@
     <meta name="apple-mobile-web-app-title" content="Sistema Abonos">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
-    <link rel="manifest" href="/manifest.webmanifest">
+    <link rel="manifest" href="{{ asset('build/manifest.webmanifest') }}">
     <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
