@@ -16,10 +16,12 @@ document.addEventListener('DOMContentLoaded', () => {
         clienteSearch: document.getElementById('clienteSearch'),
         clienteGlobal: document.getElementById('cliente_global'),
         pedidoInput: document.getElementById('pedido'),
+        fechaEntregaInput: document.getElementById('fecha_entrega'),
         aplicarIvaGlobal: document.getElementById('aplicarIvaGlobal'),
 
         hiddenCliente: document.getElementById('hiddenCliente'),
         hiddenPedido: document.getElementById('hiddenPedido'),
+        hiddenFechaEntrega: document.getElementById('hiddenFechaEntrega'),
         inputHiddenDatos: document.getElementById('inputHiddenDatos'),
         hiddenIvaStatus: document.getElementById('hiddenIvaStatus'),
 
@@ -64,6 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         elements.hiddenCliente.value = elements.clienteGlobal.value;
         elements.hiddenPedido.value = elements.pedidoInput.value.trim();
+        elements.hiddenFechaEntrega.value = elements.fechaEntregaInput.value;
         elements.inputHiddenDatos.value = JSON.stringify(state.items);
         elements.hiddenIvaStatus.value = elements.aplicarIvaGlobal.checked ? 1 : 0;
 
@@ -194,6 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
     elements.clienteSearch.addEventListener('input', filterClients);
     elements.clienteGlobal.addEventListener('change', updateUi);
     elements.pedidoInput.addEventListener('input', updateUi);
+    elements.fechaEntregaInput.addEventListener('change', updateUi);
     elements.aplicarIvaGlobal.addEventListener('change', updateUi);
 
     elements.formFinal.addEventListener('submit', (event) => {
@@ -202,6 +206,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!elements.clienteGlobal.value.trim()) {
             event.preventDefault();
             alert('Selecciona un cliente antes de guardar.');
+            return;
+        }
+
+        if (!elements.fechaEntregaInput.value) {
+            event.preventDefault();
+            alert('Selecciona la fecha de entrega antes de guardar.');
             return;
         }
 

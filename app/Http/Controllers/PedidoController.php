@@ -26,6 +26,7 @@ class PedidoController extends Controller
         $validated = $request->validate([
             'pedido' => ['nullable', 'string', 'max:255'],
             'cliente' => ['required', 'string', 'max:255'],
+            'fecha_entrega' => ['required', 'date'],
             'datos_pedido' => ['required', 'json'],
             'iva_aplicado' => ['required', 'boolean'],
         ]);
@@ -68,7 +69,7 @@ class PedidoController extends Controller
                 'subtotal' => $subtotal,
                 'iva' => $iva,
                 'total' => $total,
-                'fecha_entrega' => now(),
+                'fecha_entrega' => $validated['fecha_entrega'],
             ]);
 
             foreach ($items as $item) {

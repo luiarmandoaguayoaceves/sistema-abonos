@@ -137,7 +137,7 @@
                     </p>
                 </div>
 
-                <div class="grid grid-cols-1 gap-5 p-6 md:grid-cols-5">
+                <div class="grid grid-cols-1 gap-5 p-6 md:grid-cols-6">
                     <div class="md:col-span-4">
                         <label for="clienteSearch" class="block text-sm font-medium text-slate-700">
                             Buscar cliente
@@ -179,6 +179,19 @@
                             id="pedido"
                             placeholder="Opcional"
                             autocomplete="off"
+                            class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
+                        >
+                    </div>
+
+                    <div>
+                        <label for="fecha_entrega" class="block text-sm font-medium text-slate-700">
+                            Fecha de entrega <span class="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="date"
+                            id="fecha_entrega"
+                            value="{{ old('fecha_entrega', now()->format('Y-m-d')) }}"
+                            required
                             class="mt-1 w-full rounded-xl border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
                         >
                     </div>
@@ -269,6 +282,7 @@
                 <input type="hidden" name="datos_pedido" id="inputHiddenDatos">
                 <input type="hidden" name="iva_aplicado" id="hiddenIvaStatus" value="0">
                 <input type="hidden" name="pedido" id="hiddenPedido">
+                <input type="hidden" name="fecha_entrega" id="hiddenFechaEntrega">
 
                 <button
                     type="submit"

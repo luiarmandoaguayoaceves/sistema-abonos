@@ -26,6 +26,7 @@ it('permite crear un pedido con detalles normalizados', function () {
     $response = $this->post(route('pedidos.store'), [
         'pedido' => 'PED-001',
         'cliente' => 'Cliente Demo',
+        'fecha_entrega' => '2026-06-20',
         'datos_pedido' => json_encode($items),
         'iva_aplicado' => true,
     ]);
@@ -67,6 +68,7 @@ it('no permite crear un pedido sin productos', function () {
     $response = $this->post(route('pedidos.store'), [
         'pedido' => 'PED-002',
         'cliente' => 'Cliente Demo',
+        'fecha_entrega' => '2026-06-20',
         'datos_pedido' => json_encode([]),
         'iva_aplicado' => false,
     ]);
