@@ -13,11 +13,13 @@ class FacturaController extends Controller
     public function index(): View
     {
         $pedidosSinFactura = Pedido::query()
+            ->activos()
             ->whereNull('pdf_factura')
             ->orderByDesc('created_at')
             ->get();
 
         $pedidosConFactura = Pedido::query()
+            ->activos()
             ->whereNotNull('pdf_factura')
             ->orderByDesc('updated_at')
             ->get();
@@ -33,7 +35,9 @@ class FacturaController extends Controller
             'archivo_pdf' => ['required', 'file', 'mimes:pdf', 'max:2048'],
         ]);
 
-        $pedido = Pedido::findOrFail($validated['pedido_id']);
+        $pedido = Pedido::query()
+            ->activos()
+            ->findOrFail($validated['pedido_id']);
 
         if ($pedido->pdf_factura) {
             return redirect()
@@ -64,7 +68,9 @@ class FacturaController extends Controller
 
     public function destroy(int $id): RedirectResponse
     {
-        $pedido = Pedido::findOrFail($id);
+        $pedido = Pedido::query()
+            ->activos()
+            ->findOrFail($id);
 
         if ($pedido->pdf_factura) {
             Storage::disk('public')->delete('facturas/' . $pedido->pdf_factura);

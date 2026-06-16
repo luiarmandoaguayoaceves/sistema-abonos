@@ -16,6 +16,7 @@ class DashboardController extends Controller
             ->get();
 
         $pedidosPorCliente = Pedido::query()
+            ->activos()
             ->with('abonos')
             ->latest()
             ->get()

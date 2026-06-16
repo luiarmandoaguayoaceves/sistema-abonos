@@ -25,11 +25,16 @@ class Pedido extends Model
         'detalles' => 'array',
         'fecha_entrega' => 'datetime',
         'pagado' => 'boolean',
+        'eliminado' => 'boolean',
         'subtotal' => 'decimal:2',
         'iva' => 'decimal:2',
         'total' => 'decimal:2',
-        'eliminado' => 'boolean',
     ];
+
+    public function scopeActivos($query)
+    {
+        return $query->where('eliminado', false);
+    }
 
     public function detallesPedido(): HasMany
     {

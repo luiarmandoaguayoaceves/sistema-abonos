@@ -14,16 +14,18 @@ class AbonoController extends Controller
     public function index(): View
     {
         $pedidosPendientes = Pedido::query()
-            ->where('pagado', false)
-            ->with('abonos')
-            ->orderByDesc('created_at')
-            ->get();
+        ->activos()
+        ->where('pagado', false)
+        ->with('abonos')
+        ->orderByDesc('created_at')
+        ->get();
 
-        $pedidosPagados = Pedido::query()
-            ->where('pagado', true)
-            ->with('abonos')
-            ->orderByDesc('updated_at')
-            ->get();
+    $pedidosPagados = Pedido::query()
+        ->activos()
+        ->where('pagado', true)
+        ->with('abonos')
+        ->orderByDesc('updated_at')
+        ->get();
 
         return view('abonos', compact('pedidosPendientes', 'pedidosPagados'));
     }
@@ -39,6 +41,7 @@ class AbonoController extends Controller
 
         return DB::transaction(function () use ($validated) {
             $pedido = Pedido::query()
+                ->activos()
                 ->whereKey($validated['pedido_id'])
                 ->lockForUpdate()
                 ->firstOrFail();
@@ -86,6 +89,7 @@ class AbonoController extends Controller
     public function marcarPagado(int $id): RedirectResponse
     {
         $pedido = Pedido::query()
+            ->activos()
             ->with('abonos')
             ->findOrFail($id);
 

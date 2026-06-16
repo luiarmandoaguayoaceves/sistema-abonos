@@ -42,3 +42,29 @@ it('muestra clientes con su saldo pendiente en el dashboard', function () {
     $response->assertSee('Marca Demo');
     $response->assertSee('$600.00');
 });
+
+it('no cuenta pedidos eliminados en la deuda del dashboard', function () {
+    $cliente = Cliente::create([
+        'nombre' => 'Cliente Eliminado',
+        'cve_cliente' => 200,
+        'marca' => 'Marca Demo',
+        'frecuencia_pago' => 'Semanal',
+    ]);
+
+    Pedido::create([
+        'n_pedido' => 'PED-ELIMINADO',
+        'cliente' => $cliente->nombre,
+        'detalles' => [],
+        'subtotal' => 1000,
+        'iva' => 0,
+        'total' => 1000,
+        'fecha_entrega' => now(),
+        'pagado' => false,
+        'eliminado' => true,
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertSee('Cliente Eliminado')
+        ->assertDontSee('$1,000.00');
+});

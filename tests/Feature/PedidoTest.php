@@ -126,3 +126,21 @@ it('permite eliminar logicamente un pedido', function () {
 
     expect($pedido->eliminado)->toBeTrue();
 });
+
+it('no muestra pedidos eliminados en seguimiento', function () {
+    Pedido::create([
+        'n_pedido' => 'PED-DEL-001',
+        'cliente' => 'Cliente Demo',
+        'detalles' => [],
+        'subtotal' => 1000,
+        'iva' => 0,
+        'total' => 1000,
+        'fecha_entrega' => now(),
+        'pagado' => false,
+        'eliminado' => true,
+    ]);
+
+    $this->get(route('seguimiento'))
+        ->assertOk()
+        ->assertDontSee('PED-DEL-001');
+});

@@ -13,7 +13,7 @@ class PedidoController extends Controller
     public function index(): View
     {
         $pedidos = Pedido::query()
-        ->where('eliminado', false)
+        ->activos()
         ->with('detallesPedido')
         ->orderByDesc('fecha_entrega')
         ->orderByDesc('created_at')
