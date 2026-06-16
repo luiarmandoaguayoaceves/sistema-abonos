@@ -18,6 +18,7 @@ class Pedido extends Model
         'folio_factura',
         'pdf_factura',
         'pagado',
+        'eliminado',
     ];
 
     protected $casts = [
@@ -27,6 +28,7 @@ class Pedido extends Model
         'subtotal' => 'decimal:2',
         'iva' => 'decimal:2',
         'total' => 'decimal:2',
+        'eliminado' => 'boolean',
     ];
 
     public function detallesPedido(): HasMany

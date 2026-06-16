@@ -104,3 +104,25 @@ it('permite actualizar la fecha de entrega sin modificar created_at', function (
     expect($pedido->fecha_entrega->format('Y-m-d H:i:s'))->toBe('2026-06-20 15:30:00');
     expect($pedido->created_at->format('Y-m-d H:i:s'))->toBe($createdAtOriginal->format('Y-m-d H:i:s'));
 });
+
+it('permite eliminar logicamente un pedido', function () {
+    $pedido = Pedido::create([
+        'n_pedido' => 'PED-DEL-001',
+        'cliente' => 'Cliente Demo',
+        'detalles' => [],
+        'subtotal' => 1000,
+        'iva' => 0,
+        'total' => 1000,
+        'fecha_entrega' => now(),
+        'pagado' => false,
+        'eliminado' => false,
+    ]);
+
+    $response = $this->delete(route('pedidos.destroy', $pedido->id));
+
+    $response->assertRedirect();
+
+    $pedido->refresh();
+
+    expect($pedido->eliminado)->toBeTrue();
+});

@@ -37,6 +37,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/seguimiento', [PedidoController::class, 'index'])->name('seguimiento');
     Route::post('/pedidos/guardar', [PedidoController::class, 'store'])->name('pedidos.store');
     Route::put('pedidos/update-fecha/{id}', [PedidoController::class, 'updateFecha'])->name('pedidos.updateFecha');
+    Route::delete('/pedidos/{id}', [PedidoController::class, 'destroy'])->name('pedidos.destroy');
 
     Route::get('/facturas', [FacturaController::class, 'index'])->name('facturas');
     Route::post('/facturas', [FacturaController::class, 'store'])->name('facturas.store');

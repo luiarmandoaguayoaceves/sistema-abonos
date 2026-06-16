@@ -13,10 +13,11 @@ class PedidoController extends Controller
     public function index(): View
     {
         $pedidos = Pedido::query()
-            ->with('detallesPedido')
-            ->orderByDesc('fecha_entrega')
-            ->orderByDesc('created_at')
-            ->get();
+        ->where('eliminado', false)
+        ->with('detallesPedido')
+        ->orderByDesc('fecha_entrega')
+        ->orderByDesc('created_at')
+        ->get();
 
         return view('seguimiento', compact('pedidos'));
     }
@@ -70,6 +71,7 @@ class PedidoController extends Controller
                 'iva' => $iva,
                 'total' => $total,
                 'fecha_entrega' => $validated['fecha_entrega'],
+                'eliminado' => false,
             ]);
 
             foreach ($items as $item) {
@@ -106,5 +108,19 @@ class PedidoController extends Controller
         return redirect()
             ->back()
             ->with('success', 'Fecha actualizada correctamente.');
+    }
+    public function destroy(int $id): RedirectResponse
+    {
+        $pedido = Pedido::query()
+            ->where('eliminado', false)
+            ->findOrFail($id);
+
+        $pedido->update([
+            'eliminado' => true,
+        ]);
+
+        return redirect()
+            ->back()
+            ->with('success', 'Pedido eliminado correctamente.');
     }
 }

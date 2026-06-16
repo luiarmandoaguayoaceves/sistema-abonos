@@ -86,6 +86,9 @@
                         <th class="px-6 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
                             Acciones
                         </th>
+                        <th class="px-4 py-3 text-right text-xs font-semibold uppercase tracking-wider text-slate-500">
+                            Eliminar
+                        </th>
                     </tr>
                 </thead>
 
@@ -150,6 +153,23 @@
                                 >
                                     Ver detalles
                                 </button>
+                            </td>
+                            <td class="px-4 py-3 text-right">
+                                <form
+                                    action="{{ route('pedidos.destroy', $pedido->id) }}"
+                                    method="POST"
+                                    onsubmit="return confirm('¿Seguro que deseas eliminar este pedido? Esta acción solo lo ocultará del sistema, no lo borrará de la base de datos.');"
+                                >
+                                    @csrf
+                                    @method('DELETE')
+
+                                    <button
+                                        type="submit"
+                                        class="rounded-lg bg-red-50 px-3 py-2 text-xs font-bold text-red-700 transition hover:bg-red-100"
+                                    >
+                                        Eliminar
+                                    </button>
+                                </form>
                             </td>
                         </tr>
 
