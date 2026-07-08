@@ -9,7 +9,7 @@
                 Gestión de facturación
             </h1>
             <p class="mt-1 text-sm text-slate-500">
-                Vincula archivos PDF de factura a pedidos y consulta facturas registradas.
+                Vincula archivos PDF de factura solo para pedidos del cliente Calzado vel.
             </p>
         </div>
 
@@ -44,7 +44,7 @@
                 Vincular nueva factura
             </h2>
             <p class="mt-1 text-sm text-slate-500">
-                Solo aparecen pedidos que todavía no tienen PDF de factura registrado.
+                Solo aparecen pedidos de Calzado vel que todavía no tienen PDF de factura registrado.
             </p>
         </div>
 

@@ -10,16 +10,20 @@ use Illuminate\View\View;
 
 class FacturaController extends Controller
 {
+    private const CLIENTE_FACTURACION = 'calzado vel';
+
     public function index(): View
     {
         $pedidosSinFactura = Pedido::query()
             ->activos()
+            ->whereRaw('LOWER(TRIM(cliente)) = ?', [self::CLIENTE_FACTURACION])
             ->whereNull('pdf_factura')
             ->orderByDesc('created_at')
             ->get();
 
         $pedidosConFactura = Pedido::query()
             ->activos()
+            ->whereRaw('LOWER(TRIM(cliente)) = ?', [self::CLIENTE_FACTURACION])
             ->whereNotNull('pdf_factura')
             ->orderByDesc('updated_at')
             ->get();
@@ -37,6 +41,7 @@ class FacturaController extends Controller
 
         $pedido = Pedido::query()
             ->activos()
+            ->whereRaw('LOWER(TRIM(cliente)) = ?', [self::CLIENTE_FACTURACION])
             ->findOrFail($validated['pedido_id']);
 
         if ($pedido->pdf_factura) {
@@ -70,6 +75,7 @@ class FacturaController extends Controller
     {
         $pedido = Pedido::query()
             ->activos()
+            ->whereRaw('LOWER(TRIM(cliente)) = ?', [self::CLIENTE_FACTURACION])
             ->findOrFail($id);
 
         if ($pedido->pdf_factura) {

@@ -12,7 +12,7 @@ it('permite vincular una factura PDF a un pedido', function () {
 
     $pedido = Pedido::create([
         'n_pedido' => 'PED-FAC-001',
-        'cliente' => 'Cliente Factura',
+        'cliente' => 'Calzado vel',
         'detalles' => [],
         'subtotal' => 1000,
         'iva' => 160,
@@ -43,7 +43,7 @@ it('no permite vincular factura si el pedido ya tiene factura', function () {
 
     $pedido = Pedido::create([
         'n_pedido' => 'PED-FAC-002',
-        'cliente' => 'Cliente Factura',
+        'cliente' => 'Calzado vel',
         'detalles' => [],
         'subtotal' => 1000,
         'iva' => 160,
@@ -76,7 +76,7 @@ it('permite eliminar una factura vinculada', function () {
 
     $pedido = Pedido::create([
         'n_pedido' => 'PED-FAC-003',
-        'cliente' => 'Cliente Factura',
+        'cliente' => 'Calzado vel',
         'detalles' => [],
         'subtotal' => 1000,
         'iva' => 160,
@@ -96,4 +96,44 @@ it('permite eliminar una factura vinculada', function () {
     expect($pedido->pdf_factura)->toBeNull();
 
     Storage::disk('public')->assertMissing('facturas/factura_demo.pdf');
+});
+
+it('solo muestra pedidos de calzado vel en facturacion', function () {
+    Pedido::create([
+        'n_pedido' => 'PED-VEL-001',
+        'cliente' => 'Calzado vel',
+        'detalles' => [],
+        'subtotal' => 1000,
+        'iva' => 160,
+        'total' => 1160,
+        'fecha_entrega' => now(),
+    ]);
+
+    Pedido::create([
+        'n_pedido' => 'PED-OTRO-001',
+        'cliente' => 'Otro Cliente',
+        'detalles' => [],
+        'subtotal' => 1000,
+        'iva' => 160,
+        'total' => 1160,
+        'fecha_entrega' => now(),
+    ]);
+
+    Pedido::create([
+        'n_pedido' => 'PED-OTRO-FAC',
+        'cliente' => 'Otro Cliente',
+        'detalles' => [],
+        'subtotal' => 1000,
+        'iva' => 160,
+        'total' => 1160,
+        'fecha_entrega' => now(),
+        'folio_factura' => 'A-999',
+        'pdf_factura' => 'factura_otro.pdf',
+    ]);
+
+    $this->get(route('facturas'))
+        ->assertOk()
+        ->assertSee('PED-VEL-001')
+        ->assertDontSee('PED-OTRO-001')
+        ->assertDontSee('PED-OTRO-FAC');
 });
