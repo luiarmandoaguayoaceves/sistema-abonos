@@ -7,8 +7,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const searchInput = document.querySelector('[data-pedidos-search]');
     const pedidoRows = document.querySelectorAll('[data-pedido-row]');
-    const detailRows = document.querySelectorAll('[data-detalle-row]');
+    const monthHeadings = document.querySelectorAll('[data-month-heading]');
     const emptySearchRow = document.querySelector('[data-empty-search-row]');
+    const totalPedidos = document.querySelector('[data-total-pedidos]');
+
+    function formatCurrency(amount) {
+        return new Intl.NumberFormat('es-MX', {
+            style: 'currency',
+            currency: 'MXN',
+        }).format(amount);
+    }
+
+    function updateMonthHeadings() {
+        monthHeadings.forEach((heading) => {
+            const monthGroup = heading.dataset.monthGroup;
+            const hasVisibleRows = [...pedidoRows].some((row) => {
+                return row.dataset.monthGroup === monthGroup && !row.classList.contains('hidden');
+            });
+
+            heading.classList.toggle('hidden', !hasVisibleRows);
+        });
+    }
+
+    function updateVisibleTotal() {
+        if (!totalPedidos) {
+            return;
+        }
+
+        const total = [...pedidoRows].reduce((sum, row) => {
+            if (row.classList.contains('hidden')) {
+                return sum;
+            }
+
+            return sum + Number(row.dataset.totalAmount || 0);
+        }, 0);
+
+        totalPedidos.textContent = formatCurrency(total);
+    }
 
     function hideDetailRow(pedidoId) {
         const detailRow = document.querySelector(`[data-detalle-row="${pedidoId}"]`);
@@ -58,6 +93,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (emptySearchRow) {
             emptySearchRow.classList.toggle('hidden', visibleRows > 0);
         }
+
+        updateMonthHeadings();
+        updateVisibleTotal();
     }
 
     document.addEventListener('click', (event) => {
@@ -73,4 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (searchInput) {
         searchInput.addEventListener('input', filterRows);
     }
+
+    updateMonthHeadings();
+    updateVisibleTotal();
 });

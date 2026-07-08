@@ -144,3 +144,49 @@ it('no muestra pedidos eliminados en seguimiento', function () {
         ->assertOk()
         ->assertDontSee('PED-DEL-001');
 });
+
+it('filtra seguimiento por mes y muestra la suma del total', function () {
+    Pedido::create([
+        'n_pedido' => 'PED-ENE-001',
+        'cliente' => 'Cliente Enero',
+        'detalles' => [],
+        'subtotal' => 1000,
+        'iva' => 0,
+        'total' => 1000,
+        'fecha_entrega' => '2026-01-10 10:00:00',
+        'pagado' => false,
+        'eliminado' => false,
+    ]);
+
+    Pedido::create([
+        'n_pedido' => 'PED-ENE-002',
+        'cliente' => 'Cliente Enero Dos',
+        'detalles' => [],
+        'subtotal' => 500,
+        'iva' => 0,
+        'total' => 500,
+        'fecha_entrega' => '2026-01-20 10:00:00',
+        'pagado' => false,
+        'eliminado' => false,
+    ]);
+
+    Pedido::create([
+        'n_pedido' => 'PED-FEB-001',
+        'cliente' => 'Cliente Febrero',
+        'detalles' => [],
+        'subtotal' => 800,
+        'iva' => 0,
+        'total' => 800,
+        'fecha_entrega' => '2026-02-10 10:00:00',
+        'pagado' => false,
+        'eliminado' => false,
+    ]);
+
+    $this->get(route('seguimiento', ['mes' => '2026-01']))
+        ->assertOk()
+        ->assertSee('Enero 2026')
+        ->assertSee('PED-ENE-001')
+        ->assertSee('PED-ENE-002')
+        ->assertSee('$1,500.00')
+        ->assertDontSee('PED-FEB-001');
+});

@@ -50,16 +50,35 @@
                     </p>
                 </div>
 
-                <div class="w-full lg:max-w-sm">
-                    <label for="search" class="sr-only">Buscar pedido</label>
-                    <input
-                        type="text"
-                        id="search"
-                        data-pedidos-search
-                        placeholder="Buscar por pedido, cliente o estatus..."
-                        autocomplete="off"
-                        class="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
-                    >
+                <div class="grid w-full gap-3 sm:grid-cols-2 lg:max-w-2xl">
+                    <form action="{{ route('seguimiento') }}" method="GET">
+                        <label for="mes" class="sr-only">Filtrar por mes</label>
+                        <select
+                            id="mes"
+                            name="mes"
+                            onchange="this.form.submit()"
+                            class="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
+                        >
+                            <option value="">Todos los meses</option>
+                            @foreach ($monthOptions as $monthOption)
+                                <option value="{{ $monthOption['value'] }}" @selected($selectedMonth === $monthOption['value'])>
+                                    {{ $monthOption['label'] }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+
+                    <div>
+                        <label for="search" class="sr-only">Buscar pedido</label>
+                        <input
+                            type="text"
+                            id="search"
+                            data-pedidos-search
+                            placeholder="Buscar por pedido, cliente o estatus..."
+                            autocomplete="off"
+                            class="w-full rounded-xl border border-slate-300 px-4 py-2 text-sm outline-none transition focus:border-slate-900 focus:ring-2 focus:ring-slate-200"
+                        >
+                    </div>
                 </div>
             </div>
         </div>
@@ -93,9 +112,14 @@
                 </thead>
 
                 <tbody class="divide-y divide-slate-200 bg-white">
+                    @php
+                        $currentMonth = null;
+                    @endphp
                     @forelse($pedidos as $pedido)
                         @php
                             $fechaEntrega = $pedido->fecha_entrega ?? $pedido->created_at;
+                            $monthKey = $fechaEntrega->format('Y-m');
+                            $monthGroup = $pedidosPorMes->get($monthKey);
                             $totalDetalles = $pedido->detallesPedido->count() ?: count($pedido->detalles ?? []);
                             $estatusTexto = $pedido->pagado ? 'Pagado' : 'Pendiente';
                             $searchableText = strtolower(
@@ -106,9 +130,29 @@
                             );
                         @endphp
 
+                        @if ($currentMonth !== $monthKey)
+                            @php
+                                $currentMonth = $monthKey;
+                            @endphp
+                            <tr data-month-heading data-month-group="{{ $monthKey }}" class="bg-slate-100">
+                                <td colspan="7" class="px-6 py-3">
+                                    <div class="flex flex-col gap-1 sm:flex-row sm:items-center sm:justify-between">
+                                        <span class="text-sm font-bold uppercase tracking-wide text-slate-700">
+                                            {{ $monthGroup['label'] }}
+                                        </span>
+                                        <span class="text-sm font-semibold text-slate-700">
+                                            {{ $monthGroup['pedidos']->count() }} pedidos · Subtotal ${{ number_format($monthGroup['total'], 2) }}
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endif
+
                         <tr
                             data-pedido-row
                             data-pedido-id="{{ $pedido->id }}"
+                            data-month-group="{{ $monthKey }}"
+                            data-total-amount="{{ (float) $pedido->total }}"
                             data-searchable-text="{{ $searchableText }}"
                             class="transition hover:bg-slate-50"
                         >
@@ -173,8 +217,8 @@
                             </td>
                         </tr>
 
-                        <tr data-detalle-row="{{ $pedido->id }}" class="hidden bg-slate-50">
-                            <td colspan="6" class="px-6 py-6">
+                        <tr data-detalle-row="{{ $pedido->id }}" data-month-group="{{ $monthKey }}" class="hidden bg-slate-50">
+                            <td colspan="7" class="px-6 py-6">
                                 <div class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
 
                                     <div class="mb-5 border-b border-slate-200 pb-5">
@@ -292,17 +336,29 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="px-6 py-12 text-center text-sm text-slate-500">
+                            <td colspan="7" class="px-6 py-12 text-center text-sm text-slate-500">
                                 No hay pedidos registrados.
                             </td>
                         </tr>
                     @endforelse
 
                     <tr data-empty-search-row class="hidden">
-                        <td colspan="6" class="px-6 py-12 text-center text-sm text-slate-500">
+                        <td colspan="7" class="px-6 py-12 text-center text-sm text-slate-500">
                             No se encontraron pedidos con esa búsqueda.
                         </td>
                     </tr>
+
+                    @if ($pedidos->isNotEmpty())
+                        <tr class="bg-slate-900 text-white">
+                            <td colspan="4" class="px-6 py-4 text-right text-sm font-semibold">
+                                Total de pedidos mostrados
+                            </td>
+                            <td class="px-6 py-4 text-right text-base font-bold" data-total-pedidos>
+                                ${{ number_format($totalPedidos, 2) }}
+                            </td>
+                            <td colspan="2"></td>
+                        </tr>
+                    @endif
                 </tbody>
             </table>
         </div>

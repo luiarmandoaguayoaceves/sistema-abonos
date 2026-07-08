@@ -10,16 +10,79 @@ use Illuminate\View\View;
 
 class PedidoController extends Controller
 {
-    public function index(): View
+    public function index(Request $request): View
     {
-        $pedidos = Pedido::query()
-        ->activos()
-        ->with('detallesPedido')
-        ->orderByDesc('fecha_entrega')
-        ->orderByDesc('created_at')
-        ->get();
+        $selectedMonth = $request->query('mes');
 
-        return view('seguimiento', compact('pedidos'));
+        if ($selectedMonth && ! preg_match('/^\d{4}-\d{2}$/', $selectedMonth)) {
+            $selectedMonth = null;
+        }
+
+        $monthNames = [
+            1 => 'Enero',
+            2 => 'Febrero',
+            3 => 'Marzo',
+            4 => 'Abril',
+            5 => 'Mayo',
+            6 => 'Junio',
+            7 => 'Julio',
+            8 => 'Agosto',
+            9 => 'Septiembre',
+            10 => 'Octubre',
+            11 => 'Noviembre',
+            12 => 'Diciembre',
+        ];
+
+        $allPedidos = Pedido::query()
+            ->activos()
+            ->orderByDesc('fecha_entrega')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $monthOptions = $allPedidos
+            ->map(function (Pedido $pedido) use ($monthNames) {
+                $fecha = $pedido->fecha_entrega ?? $pedido->created_at;
+
+                return [
+                    'value' => $fecha->format('Y-m'),
+                    'label' => $monthNames[(int) $fecha->format('n')] . ' ' . $fecha->format('Y'),
+                ];
+            })
+            ->unique('value')
+            ->values();
+
+        $pedidos = Pedido::query()
+            ->activos()
+            ->with('detallesPedido')
+            ->when($selectedMonth, function ($query) use ($selectedMonth) {
+                [$year, $month] = explode('-', $selectedMonth);
+
+                $query->whereYear('fecha_entrega', $year)
+                    ->whereMonth('fecha_entrega', $month);
+            })
+            ->orderByDesc('fecha_entrega')
+            ->orderByDesc('created_at')
+            ->get();
+
+        $pedidosPorMes = $pedidos
+            ->groupBy(function (Pedido $pedido) {
+                $fecha = $pedido->fecha_entrega ?? $pedido->created_at;
+
+                return $fecha->format('Y-m');
+            })
+            ->map(function ($pedidosMes, string $monthKey) use ($monthNames) {
+                [$year, $month] = explode('-', $monthKey);
+
+                return [
+                    'label' => $monthNames[(int) $month] . ' ' . $year,
+                    'pedidos' => $pedidosMes,
+                    'total' => $pedidosMes->sum(fn (Pedido $pedido) => (float) $pedido->total),
+                ];
+            });
+
+        $totalPedidos = $pedidos->sum(fn (Pedido $pedido) => (float) $pedido->total);
+
+        return view('seguimiento', compact('pedidos', 'pedidosPorMes', 'monthOptions', 'selectedMonth', 'totalPedidos'));
     }
 
     public function store(Request $request): RedirectResponse
