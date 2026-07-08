@@ -41,7 +41,7 @@ class PedidoController extends Controller
 
         $monthOptions = $allPedidos
             ->map(function (Pedido $pedido) use ($monthNames) {
-                $fecha = $pedido->fecha_entrega ?? $pedido->created_at;
+                $fecha = $pedido->fechaSeguimiento();
 
                 return [
                     'value' => $fecha->format('Y-m'),
@@ -57,8 +57,17 @@ class PedidoController extends Controller
             ->when($selectedMonth, function ($query) use ($selectedMonth) {
                 [$year, $month] = explode('-', $selectedMonth);
 
-                $query->whereYear('fecha_entrega', $year)
-                    ->whereMonth('fecha_entrega', $month);
+                $query->where(function ($query) use ($year, $month) {
+                    $query->where(function ($query) use ($year, $month) {
+                        $query->whereNotNull('fecha_entrega')
+                            ->whereYear('fecha_entrega', $year)
+                            ->whereMonth('fecha_entrega', $month);
+                    })->orWhere(function ($query) use ($year, $month) {
+                        $query->whereNull('fecha_entrega')
+                            ->whereYear('created_at', $year)
+                            ->whereMonth('created_at', $month);
+                    });
+                });
             })
             ->orderByDesc('fecha_entrega')
             ->orderByDesc('created_at')
@@ -66,9 +75,7 @@ class PedidoController extends Controller
 
         $pedidosPorMes = $pedidos
             ->groupBy(function (Pedido $pedido) {
-                $fecha = $pedido->fecha_entrega ?? $pedido->created_at;
-
-                return $fecha->format('Y-m');
+                return $pedido->mesSeguimiento();
             })
             ->map(function ($pedidosMes, string $monthKey) use ($monthNames) {
                 [$year, $month] = explode('-', $monthKey);
@@ -76,13 +83,15 @@ class PedidoController extends Controller
                 return [
                     'label' => $monthNames[(int) $month] . ' ' . $year,
                     'pedidos' => $pedidosMes,
+                    'pares' => $pedidosMes->sum(fn (Pedido $pedido) => $pedido->totalPares()),
                     'total' => $pedidosMes->sum(fn (Pedido $pedido) => (float) $pedido->total),
                 ];
             });
 
+        $totalPares = $pedidos->sum(fn (Pedido $pedido) => $pedido->totalPares());
         $totalPedidos = $pedidos->sum(fn (Pedido $pedido) => (float) $pedido->total);
 
-        return view('seguimiento', compact('pedidos', 'pedidosPorMes', 'monthOptions', 'selectedMonth', 'totalPedidos'));
+        return view('seguimiento', compact('pedidos', 'pedidosPorMes', 'monthOptions', 'selectedMonth', 'totalPares', 'totalPedidos'));
     }
 
     public function store(Request $request): RedirectResponse

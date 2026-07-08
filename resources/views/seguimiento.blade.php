@@ -117,10 +117,11 @@
                     @endphp
                     @forelse($pedidos as $pedido)
                         @php
-                            $fechaEntrega = $pedido->fecha_entrega ?? $pedido->created_at;
-                            $monthKey = $fechaEntrega->format('Y-m');
+                            $fechaEntrega = $pedido->fechaSeguimiento();
+                            $monthKey = $pedido->mesSeguimiento();
                             $monthGroup = $pedidosPorMes->get($monthKey);
                             $totalDetalles = $pedido->detallesPedido->count() ?: count($pedido->detalles ?? []);
+                            $totalParesPedido = $pedido->totalPares();
                             $estatusTexto = $pedido->pagado ? 'Pagado' : 'Pendiente';
                             $searchableText = strtolower(
                                 ($pedido->n_pedido ?? $pedido->id) . ' ' .
@@ -141,7 +142,7 @@
                                             {{ $monthGroup['label'] }}
                                         </span>
                                         <span class="text-sm font-semibold text-slate-700">
-                                            {{ $monthGroup['pedidos']->count() }} pedidos · Subtotal ${{ number_format($monthGroup['total'], 2) }}
+                                            {{ $monthGroup['pedidos']->count() }} pedidos · {{ number_format($monthGroup['pares']) }} pares · Subtotal ${{ number_format($monthGroup['total'], 2) }}
                                         </span>
                                     </div>
                                 </td>
@@ -152,6 +153,7 @@
                             data-pedido-row
                             data-pedido-id="{{ $pedido->id }}"
                             data-month-group="{{ $monthKey }}"
+                            data-pares-amount="{{ $totalParesPedido }}"
                             data-total-amount="{{ (float) $pedido->total }}"
                             data-searchable-text="{{ $searchableText }}"
                             class="transition hover:bg-slate-50"
@@ -174,6 +176,9 @@
                                 <span class="inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700">
                                     {{ $totalDetalles }} {{ $totalDetalles === 1 ? 'producto' : 'productos' }}
                                 </span>
+                                <div class="mt-1 text-xs font-semibold text-slate-500">
+                                    {{ number_format($totalParesPedido) }} pares
+                                </div>
                             </td>
 
                             <td class="whitespace-nowrap px-6 py-4 text-right">
@@ -353,8 +358,13 @@
                             <td colspan="4" class="px-6 py-4 text-right text-sm font-semibold">
                                 Total de pedidos mostrados
                             </td>
-                            <td class="px-6 py-4 text-right text-base font-bold" data-total-pedidos>
-                                ${{ number_format($totalPedidos, 2) }}
+                            <td class="px-6 py-4 text-right">
+                                <div class="text-xs font-semibold uppercase tracking-wide text-slate-300">
+                                    <span data-total-pares>{{ number_format($totalPares) }}</span> pares
+                                </div>
+                                <div class="text-base font-bold" data-total-pedidos>
+                                    ${{ number_format($totalPedidos, 2) }}
+                                </div>
                             </td>
                             <td colspan="2"></td>
                         </tr>

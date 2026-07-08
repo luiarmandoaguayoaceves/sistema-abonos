@@ -146,7 +146,7 @@ it('no muestra pedidos eliminados en seguimiento', function () {
 });
 
 it('filtra seguimiento por mes y muestra la suma del total', function () {
-    Pedido::create([
+    $pedidoEneroUno = Pedido::create([
         'n_pedido' => 'PED-ENE-001',
         'cliente' => 'Cliente Enero',
         'detalles' => [],
@@ -158,7 +158,15 @@ it('filtra seguimiento por mes y muestra la suma del total', function () {
         'eliminado' => false,
     ]);
 
-    Pedido::create([
+    $pedidoEneroUno->detallesPedido()->create([
+        'modelo' => 'Bota Enero',
+        'color' => 'Negro',
+        'pares' => 10,
+        'precio_unitario' => 100,
+        'subtotal' => 1000,
+    ]);
+
+    $pedidoEneroDos = Pedido::create([
         'n_pedido' => 'PED-ENE-002',
         'cliente' => 'Cliente Enero Dos',
         'detalles' => [],
@@ -168,6 +176,14 @@ it('filtra seguimiento por mes y muestra la suma del total', function () {
         'fecha_entrega' => '2026-01-20 10:00:00',
         'pagado' => false,
         'eliminado' => false,
+    ]);
+
+    $pedidoEneroDos->detallesPedido()->create([
+        'modelo' => 'Zapato Enero',
+        'color' => 'Cafe',
+        'pares' => 5,
+        'precio_unitario' => 100,
+        'subtotal' => 500,
     ]);
 
     Pedido::create([
@@ -187,6 +203,67 @@ it('filtra seguimiento por mes y muestra la suma del total', function () {
         ->assertSee('Enero 2026')
         ->assertSee('PED-ENE-001')
         ->assertSee('PED-ENE-002')
+        ->assertSee('15 pares')
         ->assertSee('$1,500.00')
         ->assertDontSee('PED-FEB-001');
+});
+
+it('filtra por created_at cuando el pedido no tiene fecha de entrega', function () {
+    $pedido = Pedido::create([
+        'n_pedido' => 'PED-SIN-FECHA-ENE',
+        'cliente' => 'Cliente Sin Fecha',
+        'detalles' => [
+            [
+                'modelo' => 'Zapato Legacy',
+                'color' => 'Negro',
+                'pares' => 3,
+                'precio' => 100,
+            ],
+        ],
+        'subtotal' => 300,
+        'iva' => 0,
+        'total' => 300,
+        'fecha_entrega' => null,
+        'pagado' => false,
+        'eliminado' => false,
+    ]);
+
+    Pedido::withoutTimestamps(function () use ($pedido) {
+        $pedido->forceFill([
+            'created_at' => '2026-01-05 10:00:00',
+            'updated_at' => '2026-01-05 10:00:00',
+        ])->save();
+    });
+
+    $this->get(route('seguimiento', ['mes' => '2026-01']))
+        ->assertOk()
+        ->assertSee('PED-SIN-FECHA-ENE')
+        ->assertSee('3 pares')
+        ->assertSee('$300.00');
+});
+
+it('usa la fecha de entrega actualizada para cambiar el pedido de mes', function () {
+    $pedido = Pedido::create([
+        'n_pedido' => 'PED-CAMBIO-MES',
+        'cliente' => 'Cliente Cambio Mes',
+        'detalles' => [],
+        'subtotal' => 1000,
+        'iva' => 0,
+        'total' => 1000,
+        'fecha_entrega' => '2026-01-15 10:00:00',
+        'pagado' => false,
+        'eliminado' => false,
+    ]);
+
+    $this->put(route('pedidos.updateFecha', $pedido->id), [
+        'fecha_entrega' => '2026-02-15 10:00:00',
+    ])->assertRedirect();
+
+    $this->get(route('seguimiento', ['mes' => '2026-01']))
+        ->assertOk()
+        ->assertDontSee('PED-CAMBIO-MES');
+
+    $this->get(route('seguimiento', ['mes' => '2026-02']))
+        ->assertOk()
+        ->assertSee('PED-CAMBIO-MES');
 });

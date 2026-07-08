@@ -54,4 +54,23 @@ class Pedido extends Model
 
         return round((float) $this->total - (float) $totalAbonado, 2);
     }
+
+    public function fechaSeguimiento()
+    {
+        return $this->fecha_entrega ?? $this->created_at;
+    }
+
+    public function mesSeguimiento(): string
+    {
+        return $this->fechaSeguimiento()->format('Y-m');
+    }
+
+    public function totalPares(): int
+    {
+        if ($this->detallesPedido->isNotEmpty()) {
+            return $this->detallesPedido->sum('pares');
+        }
+
+        return collect($this->detalles ?? [])->sum(fn ($item) => (int) ($item['pares'] ?? 0));
+    }
 }

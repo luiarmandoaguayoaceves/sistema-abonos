@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const pedidoRows = document.querySelectorAll('[data-pedido-row]');
     const monthHeadings = document.querySelectorAll('[data-month-heading]');
     const emptySearchRow = document.querySelector('[data-empty-search-row]');
+    const totalPares = document.querySelector('[data-total-pares]');
     const totalPedidos = document.querySelector('[data-total-pedidos]');
 
     function formatCurrency(amount) {
@@ -30,19 +31,31 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function updateVisibleTotal() {
-        if (!totalPedidos) {
+        if (!totalPedidos && !totalPares) {
             return;
         }
 
-        const total = [...pedidoRows].reduce((sum, row) => {
+        const totals = [...pedidoRows].reduce((currentTotals, row) => {
             if (row.classList.contains('hidden')) {
-                return sum;
+                return currentTotals;
             }
 
-            return sum + Number(row.dataset.totalAmount || 0);
-        }, 0);
+            return {
+                pares: currentTotals.pares + Number(row.dataset.paresAmount || 0),
+                total: currentTotals.total + Number(row.dataset.totalAmount || 0),
+            };
+        }, {
+            pares: 0,
+            total: 0,
+        });
 
-        totalPedidos.textContent = formatCurrency(total);
+        if (totalPares) {
+            totalPares.textContent = new Intl.NumberFormat('es-MX').format(totals.pares);
+        }
+
+        if (totalPedidos) {
+            totalPedidos.textContent = formatCurrency(totals.total);
+        }
     }
 
     function hideDetailRow(pedidoId) {
