@@ -1,2 +1,2 @@
 [deploy]
-startCommand = "php -r \"if (!getenv('APP_KEY')) { fwrite(STDERR, 'ERROR: APP_KEY is missing in Railway variables. Set APP_KEY to a Laravel base64 key.\\n'); exit(1); }\" && php artisan migrate --force && (php artisan storage:link --force || true) && php artisan serve --host=0.0.0.0 --port=${PORT}"
+startCommand = "export LOG_CHANNEL=stderr LOG_LEVEL=debug; php -r \"if (!getenv('APP_KEY')) { fwrite(STDERR, 'ERROR: APP_KEY is missing in Railway variables. Set APP_KEY to a Laravel base64 key.\\n'); exit(1); }\" && php artisan migrate --force && (php artisan storage:link --force || true) && php artisan serve --host=0.0.0.0 --port=${PORT}"
