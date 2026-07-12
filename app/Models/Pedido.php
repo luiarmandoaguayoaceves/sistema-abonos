@@ -10,7 +10,6 @@ class Pedido extends Model
     protected $fillable = [
         'cliente',
         'n_pedido',
-        'detalles',
         'subtotal',
         'iva',
         'total',
@@ -22,7 +21,6 @@ class Pedido extends Model
     ];
 
     protected $casts = [
-        'detalles' => 'array',
         'fecha_entrega' => 'datetime',
         'pagado' => 'boolean',
         'eliminado' => 'boolean',
@@ -67,10 +65,6 @@ class Pedido extends Model
 
     public function totalPares(): int
     {
-        if ($this->detallesPedido->isNotEmpty()) {
-            return $this->detallesPedido->sum('pares');
-        }
-
-        return collect($this->detalles ?? [])->sum(fn ($item) => (int) ($item['pares'] ?? 0));
+        return $this->detallesPedido->sum('pares');
     }
 }

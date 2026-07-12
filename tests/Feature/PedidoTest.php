@@ -84,7 +84,6 @@ it('permite actualizar la fecha de entrega sin modificar created_at', function (
     $pedido = Pedido::create([
         'n_pedido' => 'PED-003',
         'cliente' => 'Cliente Demo',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 0,
         'total' => 1000,
@@ -109,7 +108,6 @@ it('permite eliminar logicamente un pedido', function () {
     $pedido = Pedido::create([
         'n_pedido' => 'PED-DEL-001',
         'cliente' => 'Cliente Demo',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 0,
         'total' => 1000,
@@ -131,7 +129,6 @@ it('no muestra pedidos eliminados en seguimiento', function () {
     Pedido::create([
         'n_pedido' => 'PED-DEL-001',
         'cliente' => 'Cliente Demo',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 0,
         'total' => 1000,
@@ -149,7 +146,6 @@ it('filtra seguimiento por mes y muestra la suma del total', function () {
     $pedidoEneroUno = Pedido::create([
         'n_pedido' => 'PED-ENE-001',
         'cliente' => 'Cliente Enero',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 0,
         'total' => 1000,
@@ -169,7 +165,6 @@ it('filtra seguimiento por mes y muestra la suma del total', function () {
     $pedidoEneroDos = Pedido::create([
         'n_pedido' => 'PED-ENE-002',
         'cliente' => 'Cliente Enero Dos',
-        'detalles' => [],
         'subtotal' => 500,
         'iva' => 0,
         'total' => 500,
@@ -189,7 +184,6 @@ it('filtra seguimiento por mes y muestra la suma del total', function () {
     Pedido::create([
         'n_pedido' => 'PED-FEB-001',
         'cliente' => 'Cliente Febrero',
-        'detalles' => [],
         'subtotal' => 800,
         'iva' => 0,
         'total' => 800,
@@ -212,20 +206,20 @@ it('filtra por created_at cuando el pedido no tiene fecha de entrega', function 
     $pedido = Pedido::create([
         'n_pedido' => 'PED-SIN-FECHA-ENE',
         'cliente' => 'Cliente Sin Fecha',
-        'detalles' => [
-            [
-                'modelo' => 'Zapato Legacy',
-                'color' => 'Negro',
-                'pares' => 3,
-                'precio' => 100,
-            ],
-        ],
         'subtotal' => 300,
         'iva' => 0,
         'total' => 300,
         'fecha_entrega' => null,
         'pagado' => false,
         'eliminado' => false,
+    ]);
+
+    $pedido->detallesPedido()->create([
+        'modelo' => 'Zapato Legacy',
+        'color' => 'Negro',
+        'pares' => 3,
+        'precio_unitario' => 100,
+        'subtotal' => 300,
     ]);
 
     Pedido::withoutTimestamps(function () use ($pedido) {
@@ -246,7 +240,6 @@ it('usa la fecha de entrega actualizada para cambiar el pedido de mes', function
     $pedido = Pedido::create([
         'n_pedido' => 'PED-CAMBIO-MES',
         'cliente' => 'Cliente Cambio Mes',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 0,
         'total' => 1000,

@@ -120,7 +120,7 @@
                             $fechaEntrega = $pedido->fechaSeguimiento();
                             $monthKey = $pedido->mesSeguimiento();
                             $monthGroup = $pedidosPorMes->get($monthKey);
-                            $totalDetalles = $pedido->detallesPedido->count() ?: count($pedido->detalles ?? []);
+                            $totalDetalles = $pedido->detallesPedido->count();
                             $totalParesPedido = $pedido->totalPares();
                             $estatusTexto = $pedido->pagado ? 'Pagado' : 'Pendiente';
                             $searchableText = strtolower(
@@ -288,51 +288,33 @@
                                             </thead>
 
                                             <tbody class="divide-y divide-slate-100 bg-white">
-                                                @if ($pedido->detallesPedido->isNotEmpty())
-                                                    @foreach ($pedido->detallesPedido as $detalle)
-                                                        <tr>
-                                                            <td class="px-4 py-3">
-                                                                <div class="font-semibold text-slate-900">
-                                                                    {{ $detalle->modelo }}
-                                                                </div>
-                                                                <div class="text-xs text-slate-500">
-                                                                    {{ $detalle->color }}
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-4 py-3 text-center text-slate-700">
-                                                                {{ $detalle->pares }}
-                                                            </td>
-                                                            <td class="px-4 py-3 text-right text-slate-700">
-                                                                ${{ number_format($detalle->precio_unitario, 2) }}
-                                                            </td>
-                                                            <td class="px-4 py-3 text-right font-semibold text-slate-900">
-                                                                ${{ number_format($detalle->subtotal, 2) }}
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                @else
-                                                    @foreach (($pedido->detalles ?? []) as $item)
-                                                        <tr>
-                                                            <td class="px-4 py-3">
-                                                                <div class="font-semibold text-slate-900">
-                                                                    {{ $item['modelo'] ?? 'Sin modelo' }}
-                                                                </div>
-                                                                <div class="text-xs text-slate-500">
-                                                                    {{ $item['color'] ?? 'Sin color' }}
-                                                                </div>
-                                                            </td>
-                                                            <td class="px-4 py-3 text-center text-slate-700">
-                                                                {{ $item['pares'] ?? 0 }}
-                                                            </td>
-                                                            <td class="px-4 py-3 text-right text-slate-700">
-                                                                ${{ number_format($item['precio'] ?? 0, 2) }}
-                                                            </td>
-                                                            <td class="px-4 py-3 text-right font-semibold text-slate-900">
-                                                                ${{ number_format($item['subtotalItem'] ?? 0, 2) }}
-                                                            </td>
-                                                        </tr>
-                                                    @endforeach
-                                                @endif
+                                                @forelse ($pedido->detallesPedido as $detalle)
+                                                    <tr>
+                                                        <td class="px-4 py-3">
+                                                            <div class="font-semibold text-slate-900">
+                                                                {{ $detalle->modelo }}
+                                                            </div>
+                                                            <div class="text-xs text-slate-500">
+                                                                {{ $detalle->color }}
+                                                            </div>
+                                                        </td>
+                                                        <td class="px-4 py-3 text-center text-slate-700">
+                                                            {{ $detalle->pares }}
+                                                        </td>
+                                                        <td class="px-4 py-3 text-right text-slate-700">
+                                                            ${{ number_format($detalle->precio_unitario, 2) }}
+                                                        </td>
+                                                        <td class="px-4 py-3 text-right font-semibold text-slate-900">
+                                                            ${{ number_format($detalle->subtotal, 2) }}
+                                                        </td>
+                                                    </tr>
+                                                @empty
+                                                    <tr>
+                                                        <td colspan="4" class="px-4 py-6 text-center text-sm text-slate-500">
+                                                            Este pedido no tiene productos registrados.
+                                                        </td>
+                                                    </tr>
+                                                @endforelse
                                             </tbody>
                                         </table>
                                     </div>

@@ -20,7 +20,6 @@ it('muestra clientes con su saldo pendiente en el dashboard', function () {
     $pedido = Pedido::create([
         'n_pedido' => 'PED-DASH-001',
         'cliente' => $cliente->nombre,
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 0,
         'total' => 1000,
@@ -54,7 +53,6 @@ it('no cuenta pedidos eliminados en la deuda del dashboard', function () {
     Pedido::create([
         'n_pedido' => 'PED-ELIMINADO',
         'cliente' => $cliente->nombre,
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 0,
         'total' => 1000,

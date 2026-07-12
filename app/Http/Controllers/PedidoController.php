@@ -138,7 +138,6 @@ class PedidoController extends Controller
             $pedido = Pedido::create([
                 'n_pedido' => $validated['pedido'] ?? null,
                 'cliente' => $validated['cliente'],
-                'detalles' => $items, // respaldo temporal
                 'subtotal' => $subtotal,
                 'iva' => $iva,
                 'total' => $total,

@@ -13,7 +13,6 @@ it('permite vincular una factura PDF a un pedido', function () {
     $pedido = Pedido::create([
         'n_pedido' => 'PED-FAC-001',
         'cliente' => 'Calzado vel',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 160,
         'total' => 1160,
@@ -44,7 +43,6 @@ it('no permite vincular factura si el pedido ya tiene factura', function () {
     $pedido = Pedido::create([
         'n_pedido' => 'PED-FAC-002',
         'cliente' => 'Calzado vel',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 160,
         'total' => 1160,
@@ -77,7 +75,6 @@ it('permite eliminar una factura vinculada', function () {
     $pedido = Pedido::create([
         'n_pedido' => 'PED-FAC-003',
         'cliente' => 'Calzado vel',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 160,
         'total' => 1160,
@@ -102,7 +99,6 @@ it('solo muestra pedidos de calzado vel en facturacion', function () {
     Pedido::create([
         'n_pedido' => 'PED-VEL-001',
         'cliente' => 'Calzado vel',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 160,
         'total' => 1160,
@@ -112,7 +108,6 @@ it('solo muestra pedidos de calzado vel en facturacion', function () {
     Pedido::create([
         'n_pedido' => 'PED-OTRO-001',
         'cliente' => 'Otro Cliente',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 160,
         'total' => 1160,
@@ -122,7 +117,6 @@ it('solo muestra pedidos de calzado vel en facturacion', function () {
     Pedido::create([
         'n_pedido' => 'PED-OTRO-FAC',
         'cliente' => 'Otro Cliente',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 160,
         'total' => 1160,

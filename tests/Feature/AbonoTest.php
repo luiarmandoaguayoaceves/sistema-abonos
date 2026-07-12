@@ -10,7 +10,6 @@ it('permite registrar un abono a un pedido pendiente', function () {
     $pedido = Pedido::create([
         'n_pedido' => 'PED-ABO-001',
         'cliente' => 'Cliente Abono',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 160,
         'total' => 1160,
@@ -43,7 +42,6 @@ it('no permite registrar un abono mayor al saldo pendiente', function () {
     $pedido = Pedido::create([
         'n_pedido' => 'PED-ABO-002',
         'cliente' => 'Cliente Abono',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 0,
         'total' => 1000,
@@ -74,7 +72,6 @@ it('marca automaticamente el pedido como pagado cuando el abono liquida el saldo
     $pedido = Pedido::create([
         'n_pedido' => 'PED-ABO-003',
         'cliente' => 'Cliente Abono',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 0,
         'total' => 1000,
@@ -101,7 +98,6 @@ it('no permite registrar abonos en pedidos ya pagados', function () {
     $pedido = Pedido::create([
         'n_pedido' => 'PED-ABO-004',
         'cliente' => 'Cliente Abono',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 0,
         'total' => 1000,
@@ -128,7 +124,6 @@ it('permite marcar como pagado un pedido con saldo cubierto', function () {
     $pedido = Pedido::create([
         'n_pedido' => 'PED-ABO-005',
         'cliente' => 'Cliente Abono',
-        'detalles' => [],
         'subtotal' => 1000,
         'iva' => 0,
         'total' => 1000,
